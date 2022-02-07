@@ -7,8 +7,8 @@ import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import {nanoid} from 'nanoid';
-import {Formik, Field, ErrorMessage} from 'formik'
-import * as Yup from 'yup'
+import {Formik, Field, ErrorMessage} from 'formik';
+import * as Yup from 'yup';
 import _ from 'lodash';
 
 
