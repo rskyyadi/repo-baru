@@ -2,7 +2,10 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUserEdit, faTrash, faReply, faUserPlus} from '@fortawesome/free-solid-svg-icons';
-import {Card, Modal, Button, Table} from'react-bootstrap';
+import Table from 'react-bootstrap/Table';
+import Card from 'react-bootstrap/Card';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import {nanoid} from 'nanoid';
 import {Formik, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup'
@@ -176,6 +179,8 @@ function List() {
             .required('phone is required')
     })
 
+
+    const pagination_style = {display:'flex', justifyContent:'flex-end'}
 
 
     return(
