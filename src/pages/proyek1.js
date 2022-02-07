@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUserEdit, faTrash, faReply, faUserPlus} from '@fortawesome/free-solid-svg-icons';
-import {Card, Modal, Button} from 'react-bootstrap';
+import {Card, Modal, Button, Table} from 'react-bootstrap';
 import {nanoid} from 'nanoid';
 import {Formik, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup'
@@ -266,7 +266,7 @@ function List() {
                     </Formik>
                 </Modal>
 
-                <table>
+                <Table>
                     <thead>
                         <tr>
                             <th>No</th>
@@ -305,7 +305,7 @@ function List() {
                             })
                         }
                     </tbody>
-                </table>
+                </Table>
             </Card>
 
             <Modal
