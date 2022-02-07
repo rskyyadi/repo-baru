@@ -2,11 +2,11 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUserEdit, faTrash, faReply, faUserPlus} from '@fortawesome/free-solid-svg-icons';
-import {Card, Modal, Button, Table} from 'react-bootstrap';
+import {Card, Modal, Button, Table} from'react-bootstrap';
 import {nanoid} from 'nanoid';
 import {Formik, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup'
-
+import _ from 'lodash';
 
 
 
@@ -14,14 +14,24 @@ function List() {
 //STATE
     const [user, setUser] = useState([])
     const [isEdit, setIsEdit] = useState(false)
+    const [paginatedData, setPaginatedData] = useState([])
+    const [currentPage, setCurentPage] = useState(1)
     const [indexEdit, setIndexEdit] = useState(null)
     const [indexHapus, setIndexHapus] = useState([])
+    const [tambah, setTambah] = useState({
+        name:'',
+        username:'',
+        email:'',
+        website:'',
+        phone:''
+    })
 
 //GET DATA
     const getUser = async () => {
         try {
             let response = await axios.get('https://jsonplaceholder.typicode.com/users')
             setUser(response.data)
+            setPaginatedData(_(response.data).slice(0).take(itemPerPages).value())
         } catch(e) {
             console.log(e.message)
         }
@@ -30,13 +40,6 @@ function List() {
         getUser()
     },[])
 //CREATE DATA
-    const [tambah, setTambah] = useState({
-        name:'',
-        username:'',
-        email:'',
-        website:'',
-        phone:''
-    })
     const tambahSubmit = (values) => {
 
         const createName = ({
@@ -56,6 +59,21 @@ function List() {
             website:'',
             phone:''
         })
+        const startIndex = (currentPage - 1) * itemPerPages
+        const paginatedPost = _(saveAs).slice(startIndex).take(itemPerPages).value()
+        setPaginatedData(paginatedPost)
+    }
+//PAGINATION
+    const itemPerPages = 4
+    const pageCount = user? user.length/itemPerPages : 0
+    // if(pageCount === 1) return null
+    const pages = _.range(1, pageCount+1)
+    
+    const pagination = (pageNo) => {
+        setCurentPage(pageNo)
+        const startIndex = (pageNo - 1) * itemPerPages
+        const paginatedPost = _(user).slice(startIndex).take(itemPerPages).value()
+        setPaginatedData(paginatedPost)
     }
 //MODAL CREATE - EDIT DATA
     const [show, setShow] = useState(false);
@@ -85,6 +103,10 @@ function List() {
             }
             return val
         })
+        const startIndex = (currentPage - 1) * itemPerPages
+        const paginatedPost = _(maping).slice(startIndex).take(itemPerPages).value()
+        setPaginatedData(paginatedPost)
+
         setUser(maping)
         setIsEdit(false)
         setIndexEdit('')
@@ -102,6 +124,9 @@ function List() {
         setUser(hapus)
         setIndexHapus('')
         delClose(true)
+
+        const paginatedPost = _(hapus).slice(1).take(itemPerPages).value()
+        setPaginatedData(paginatedPost)
     }
 //MODAL DELETE
     const [delShow, setDelShow] = useState(false);
@@ -266,7 +291,7 @@ function List() {
                     </Formik>
                 </Modal>
 
-                <Table>
+                <Table bordered hover>
                     <thead>
                         <tr>
                             <th>No</th>
@@ -280,7 +305,7 @@ function List() {
                     </thead>
                     <tbody>
                         {
-                            user.map((users, index) => {
+                            paginatedData.map((users, index) => {
                                 return(
                                     <tr key={users.id}>
                                         <td>{index + 1}</td>
@@ -306,6 +331,31 @@ function List() {
                         }
                     </tbody>
                 </Table>
+                <nav style={pagination_style}>
+                    <ul className='pagination' style={{cursor:'pointer'}}>
+                        <li className='page-item'>
+                            <button className='page-link' 
+                                onClick={() => pagination(currentPage -1)} 
+                                disabled={currentPage === pages[0] ? true : false}>
+                                Prev.
+                            </button>
+                        </li>
+                        {
+                            pages.map((page) => (
+                                <li className={page === currentPage ? 'page-item active' : 'page-item'}>
+                                    <button className='page-link' onClick={() => pagination(page)}>{page}</button>
+                                </li>
+                            ))
+                        }
+                        <li className='page-item'>
+                            <button className='page-link' 
+                                onClick={() => pagination(currentPage +1)}
+                                disabled={currentPage === pages[pages.length - 1] ? true : false}>
+                                Next
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
             </Card>
 
             <Modal
